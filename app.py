@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import database
+import ai_service
 
 app = Flask(__name__)
 
@@ -13,7 +14,8 @@ def home():
 def submit():
     message = request.form["message"]
     enquiry_id = database.save_enquiry(message)
-    return f"You submitted (saved as enquiry #{enquiry_id}): {message}"
+    ai_reply = ai_service.ask_ai(message)
+    return f"Enquiry #{enquiry_id} saved. AI says: {ai_reply}"
 
 
 if __name__ == "__main__":
