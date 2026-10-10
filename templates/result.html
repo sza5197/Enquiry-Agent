@@ -2,58 +2,79 @@
 <html>
 <head>
     <title>Enquiry Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Enquiry #{{ enquiry_id }}</h1>
+    <div class="container">
 
-    <h2>Original message</h2>
-    <p>{{ message }}</p>
+        <div class="card">
+            <h1>Enquiry #{{ enquiry_id }}</h1>
+            <h2>Original message</h2>
+            <p>{{ message }}</p>
+        </div>
 
-    <h2>Extracted details</h2>
-    <ul>
-        <li><strong>Customer name:</strong> {{ extracted.customer_name }}</li>
-        <li><strong>Contact:</strong> {{ extracted.contact_information }}</li>
-        <li><strong>Suburb:</strong> {{ extracted.suburb }}</li>
-        <li><strong>Issue:</strong> {{ extracted.issue_summary }}</li>
-        <li><strong>Service type:</strong> {{ extracted.service_type }}</li>
-        <li><strong>Urgency:</strong> {{ extracted.urgency }}</li>
-        <li><strong>Preferred time:</strong> {{ extracted.preferred_time }}</li>
-    </ul>
+        <div class="card">
+            <h2>Extracted details</h2>
+            <ul class="field-list">
+                <li><span class="label">Customer name</span>
+                    <span class="value {% if not extracted.customer_name %}empty{% endif %}">{{ extracted.customer_name or "not provided" }}</span></li>
+                <li><span class="label">Contact</span>
+                    <span class="value {% if not extracted.contact_information %}empty{% endif %}">{{ extracted.contact_information or "not provided" }}</span></li>
+                <li><span class="label">Suburb</span>
+                    <span class="value {% if not extracted.suburb %}empty{% endif %}">{{ extracted.suburb or "not provided" }}</span></li>
+                <li><span class="label">Issue</span>
+                    <span class="value {% if not extracted.issue_summary %}empty{% endif %}">{{ extracted.issue_summary or "not provided" }}</span></li>
+                <li><span class="label">Service type</span>
+                    <span class="value {% if not extracted.service_type %}empty{% endif %}">{{ extracted.service_type or "not provided" }}</span></li>
+                <li><span class="label">Urgency</span>
+                    <span class="value">{{ extracted.urgency }}</span></li>
+                <li><span class="label">Preferred time</span>
+                    <span class="value {% if not extracted.preferred_time %}empty{% endif %}">{{ extracted.preferred_time or "not provided" }}</span></li>
+            </ul>
+        </div>
 
-    <h2>Status</h2>
-    <p><strong>{{ status }}</strong></p>
+        <div class="card">
+            <h2>Status</h2>
+            <span class="badge {% if status == 'COMPLETE' %}complete{% else %}incomplete{% endif %}">{{ status }}</span>
 
-    {% if missing %}
-    <h2>Missing information</h2>
-    <ul>
-        {% for field in missing %}
-        <li>{{ field }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+            {% if missing %}
+            <div class="warning-box" style="margin-top:16px;">
+                <strong>Missing information:</strong>
+                <ul>
+                    {% for field in missing %}
+                    <li>{{ field }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
 
-        <h2>Action taken</h2>
-    <p><strong>{{ result.action }}</strong></p>
+        <div class="card">
+            <h2>Action taken</h2>
+            <div class="action-box">
+                <div class="action-name">{{ result.action }}</div>
 
-    {% if result.job_id %}
-    <p>Job request created with ID: {{ result.job_id }}</p>
-    {% endif %}
+                {% if result.job_id %}
+                <p style="margin-top:8px;">Job request created with ID: <strong>{{ result.job_id }}</strong></p>
+                {% endif %}
 
-    {% if result.questions %}
-    <p>Follow-up questions:</p>
-    <ul>
-        {% for q in result.questions %}
-        <li>{{ q }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+                {% if result.questions %}
+                <p style="margin-top:8px;">Follow-up questions:</p>
+                <ul style="margin-left:18px;">
+                    {% for q in result.questions %}
+                    <li>{{ q }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
 
-    {% if result.reason %}
-    <p>Reason: {{ result.reason }}</p>
-    {% endif %}
+                {% if result.reason %}
+                <p style="margin-top:8px;">Reason: {{ result.reason }}</p>
+                {% endif %}
+            </div>
+        </div>
 
+        <a class="back-link" href="/">← Submit another enquiry</a>
 
-
-    <p><a href="/">Submit another enquiry</a></p>
+    </div>
 </body>
 </html>

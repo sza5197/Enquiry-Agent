@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Enquiry Form</title>
+    <title>Submit an Enquiry</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Submit an enquiry</h1>
-
-    <form action="/submit" method="POST">
-        <textarea name="message" rows="6" cols="50"
-                  placeholder="Describe what you need help with..."></textarea>
-        <br>
-        <button type="submit">Submit</button>
-    </form>
+    <div class="container">
+        <div class="card">
+            <h1>Submit an enquiry</h1>
+            <form action="/submit" method="POST">
+                <textarea name="message" rows="6"
+                          placeholder="Describe what you need help with..."></textarea>
+                <br>
+                <button type="submit">Submit enquiry</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
