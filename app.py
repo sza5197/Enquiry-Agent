@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import database
 import ai_service
+import business_rules
 
 app = Flask(__name__)
 
@@ -14,8 +15,18 @@ def home():
 def submit():
     message = request.form["message"]
     enquiry_id = database.save_enquiry(message)
-    ai_reply = ai_service.ask_ai(message)
-    return f"Enquiry #{enquiry_id} saved. AI says: {ai_reply}"
+    extracted = ai_service.extract_enquiry(message)
+    missing = business_rules.find_missing_fields(extracted)
+    status = business_rules.determine_status(extracted)
+
+    return render_template(
+        "result.html",
+        enquiry_id=enquiry_id,
+        message=message,
+        extracted=extracted,
+        missing=missing,
+        status=status
+    )
 
 
 if __name__ == "__main__":

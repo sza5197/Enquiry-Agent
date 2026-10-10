@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Enquiry Result</title>
+</head>
+<body>
+    <h1>Enquiry #{{ enquiry_id }}</h1>
+
+    <h2>Original message</h2>
+    <p>{{ message }}</p>
+
+    <h2>Extracted details</h2>
+    <ul>
+        <li><strong>Customer name:</strong> {{ extracted.customer_name }}</li>
+        <li><strong>Contact:</strong> {{ extracted.contact_information }}</li>
+        <li><strong>Suburb:</strong> {{ extracted.suburb }}</li>
+        <li><strong>Issue:</strong> {{ extracted.issue_summary }}</li>
+        <li><strong>Service type:</strong> {{ extracted.service_type }}</li>
+        <li><strong>Urgency:</strong> {{ extracted.urgency }}</li>
+        <li><strong>Preferred time:</strong> {{ extracted.preferred_time }}</li>
+    </ul>
+
+    <h2>Status</h2>
+    <p><strong>{{ status }}</strong></p>
+
+    {% if missing %}
+    <h2>Missing information</h2>
+    <ul>
+        {% for field in missing %}
+        <li>{{ field }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <p><a href="/">Submit another enquiry</a></p>
+</body>
+</html>
