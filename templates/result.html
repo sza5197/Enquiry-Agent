@@ -32,6 +32,28 @@
     </ul>
     {% endif %}
 
+        <h2>Action taken</h2>
+    <p><strong>{{ result.action }}</strong></p>
+
+    {% if result.job_id %}
+    <p>Job request created with ID: {{ result.job_id }}</p>
+    {% endif %}
+
+    {% if result.questions %}
+    <p>Follow-up questions:</p>
+    <ul>
+        {% for q in result.questions %}
+        <li>{{ q }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if result.reason %}
+    <p>Reason: {{ result.reason }}</p>
+    {% endif %}
+
+
+
     <p><a href="/">Submit another enquiry</a></p>
 </body>
 </html>

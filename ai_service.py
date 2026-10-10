@@ -58,5 +58,3 @@ def ask_ai(message):
     )
     return response.text
 
-
-print(extract_enquiry("yo my heaters making a mad rattling noise and wont heat, im in tarneit"))

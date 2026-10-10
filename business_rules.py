@@ -21,24 +21,12 @@ def determine_status(enquiry_data):
         return "COMPLETE"
 
 
-# a complete enquiry (all three present)
-complete = {
-    "issue_summary": "Aircon not cooling",
-    "suburb": "Werribee",
-    "contact_information": "0412 345 678"
-}
+def selection_action(status):
+    if status == "COMPLETE":
+        return "CREATE_JOB_REQUEST"
 
-# an incomplete one (no contact)
-incomplete = {
-    "issue_summary": "Heater rattling",
-    "suburb": "Tarneit",
-    "contact_information": None
-}
+    elif status == "INCOMPLETE":
+        return "ASK_FOR_MISSING_INFORMATION"
 
-print("Complete enquiry:")
-print("  missing:", find_missing_fields(complete))
-print("  status:", determine_status(complete))
-
-print("Incomplete enquiry:")
-print("  missing:", find_missing_fields(incomplete))
-print("  status:", determine_status(incomplete))
+    else:
+        return "HUMAN_REVIEW"
