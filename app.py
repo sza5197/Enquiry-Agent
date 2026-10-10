@@ -18,19 +18,22 @@ def submit():
     enquiry_id = database.save_enquiry(message)
 
     extracted = ai_service.extract_enquiry(message)
+
+    # The AI's proposal (what it thinks should happen)
+    ai_proposed = extracted.get("proposed_action")
+    ai_reason = extracted.get("reason")
+
+    # Python's final decision (the authority)
     missing = business_rules.find_missing_fields(extracted)
-    status = business_rules.determine_status(extracted)
+    final_action, final_reason = business_rules.authorise_action(ai_proposed, extracted)
 
-    chosen = business_rules.selection_action(status)
-
-    if chosen == "CREATE_JOB_REQUEST":
+    # Execute the FINAL action Python decided on
+    if final_action == "CREATE_JOB_REQUEST":
         result = actions.create_job_request(enquiry_id, extracted)
-
-    elif chosen == "ASK_FOR_MISSING_INFORMATION":
+    elif final_action == "ASK_FOR_MISSING_INFORMATION":
         result = actions.ask_for_missing_information(enquiry_id, extracted, missing)
-
     else:
-        result = actions.mark_for_human_review(enquiry_id, extracted)
+        result = actions.mark_for_human_review(enquiry_id, extracted, final_reason)
 
     return render_template(
         "result.html",
@@ -38,7 +41,10 @@ def submit():
         message=message,
         extracted=extracted,
         missing=missing,
-        status=status,
+        ai_proposed=ai_proposed,
+        ai_reason=ai_reason,
+        final_action=final_action,
+        final_reason=final_reason,
         result=result
     )
 

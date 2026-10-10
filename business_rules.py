@@ -30,3 +30,20 @@ def selection_action(status):
 
     else:
         return "HUMAN_REVIEW"
+
+
+def authorise_action(proposed_action, enquiry_data):
+    missing = find_missing_fields(enquiry_data)
+
+    # 1. If the AI flagged it for a human, trust that judgement.
+    if proposed_action == "HUMAN_REVIEW":
+        return "HUMAN_REVIEW", "AI flagged this for human review."
+
+    # 2. If required fields are missing, Python forces ASK — no matter what the AI proposed.
+    if missing:
+        return "ASK_FOR_MISSING_INFORMATION", f"Required fields missing: {', '.join(missing)}."
+
+    # 3. Nothing missing and not flagged → allow the job to be created.
+    return "CREATE_JOB_REQUEST", "All required fields present and enquiry is in scope."
+
+

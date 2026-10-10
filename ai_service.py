@@ -20,6 +20,11 @@ ENQUIRY_SCHEMA = {
         "service_type": {"type": "string", "nullable": True},
         "urgency": {"type": "string", "enum": ["low", "normal", "high"]},
         "preferred_time": {"type": "string", "nullable": True},
+        "proposed_action": {
+            "type": "string",
+            "enum": ["CREATE_JOB_REQUEST", "ASK_FOR_MISSING_INFORMATION", "HUMAN_REVIEW"]
+        },
+        "reason": {"type": "string"},
     },
     "required": ["urgency"],
 }
@@ -30,9 +35,14 @@ def extract_enquiry(message):
 You are an enquiry processor for a home-services business (HVAC, plumbing, electrical).
 Read the customer message and extract the requested fields.
 
-Rules:
+Extraction rules:
 - If a field is not present in the message, use null.
 - Do not invent information that isn't there.
+
+Propose ONE action from these three:
+- CREATE_JOB_REQUEST: the message is a genuine, in-scope service request with enough detail to act on.
+- ASK_FOR_MISSING_INFORMATION: it's a real service request but important details are missing.
+- HUMAN_REVIEW: the message is out of scope (not a home-services job), contradictory, unclear, or something a human should look at.
 
 Customer message:
 "{message}"
@@ -57,4 +67,5 @@ def ask_ai(message):
         contents=message
     )
     return response.text
+
 

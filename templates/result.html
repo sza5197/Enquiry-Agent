@@ -35,7 +35,7 @@
 
         <div class="card">
             <h2>Status</h2>
-            <span class="badge {% if status == 'COMPLETE' %}complete{% else %}incomplete{% endif %}">{{ status }}</span>
+            <span class="badge {% if not missing %}complete{% else %}incomplete{% endif %}">{% if not missing %}COMPLETE{% else %}INCOMPLETE{% endif %}</span>
 
             {% if missing %}
             <div class="warning-box" style="margin-top:16px;">
@@ -50,7 +50,26 @@
         </div>
 
         <div class="card">
-            <h2>Action taken</h2>
+            <h2>Decision</h2>
+
+            <p style="margin-bottom:10px;">
+                <span class="label">AI proposed:</span>
+                <strong>{{ ai_proposed }}</strong><br>
+                <span class="label" style="font-size:0.9rem;">{{ ai_reason }}</span>
+            </p>
+
+            <p style="margin-bottom:14px;">
+                <span class="label">Final decision (Python):</span>
+                <strong>{{ final_action }}</strong><br>
+                <span class="label" style="font-size:0.9rem;">{{ final_reason }}</span>
+            </p>
+
+            {% if ai_proposed != final_action %}
+            <div class="warning-box" style="margin-bottom:14px;">
+                <strong>Python overrode the AI's proposal</strong> based on the business rules.
+            </div>
+            {% endif %}
+
             <div class="action-box">
                 <div class="action-name">{{ result.action }}</div>
 
