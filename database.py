@@ -200,3 +200,18 @@ def get_all_enquiries():
     connection.close()
 
     return [dict(row) for row in rows]
+
+
+def get_job_for_enquiry(enquiry_id):
+    connection = sqlite3.connect(DB_NAME)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM job_requests WHERE enquiry_id = ?", (enquiry_id,))
+    row = cursor.fetchone()
+
+    connection.close()
+
+    if row is None:
+        return None
+    return dict(row)

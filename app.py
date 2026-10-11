@@ -122,6 +122,23 @@ def admin_enquiries():
     enquiries = database.get_all_enquiries()
     return render_template("enquiries.html", enquiries=enquiries)
 
+@app.route("/admin/enquiries/<int:enquiry_id>")
+def admin_enquiry_detail(enquiry_id):
+    # NOTE (prototype): internal-only, no access control. Needs auth before deployment.
+    enquiry = database.get_enquiry(enquiry_id)
+    if enquiry is None:
+        return "Enquiry not found", 404
+
+    messages = database.get_messages(enquiry_id)
+    job = database.get_job_for_enquiry(enquiry_id)
+
+    return render_template(
+        "enquiry_detail.html",
+        enquiry=enquiry,
+        messages=messages,
+        job=job
+    )
+
 
 if __name__ == "__main__":
     app.run(debug=True)

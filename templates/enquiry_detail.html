@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin — Enquiry #{{ enquiry.id }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+
+        <div class="card">
+            <h1>Enquiry #{{ enquiry.id }}
+                <span class="badge {% if enquiry.status == 'COMPLETE' %}complete{% else %}incomplete{% endif %}"
+                      style="margin-left:10px; font-size:0.9rem;">{{ enquiry.status or "—" }}</span>
+            </h1>
+            <p class="label">Received {{ enquiry.created_at }}</p>
+        </div>
+
+        <div class="card">
+            <h2>Original message</h2>
+            <p>{{ enquiry.raw_message }}</p>
+        </div>
+
+        <div class="card">
+            <h2>Extracted details</h2>
+            <ul class="field-list">
+                <li><span class="label">Customer name</span><span class="value">{{ enquiry.customer_name or "—" }}</span></li>
+                <li><span class="label">Contact</span><span class="value">{{ enquiry.contact_information or "—" }}</span></li>
+                <li><span class="label">Suburb</span><span class="value">{{ enquiry.suburb or "—" }}</span></li>
+                <li><span class="label">Issue</span><span class="value">{{ enquiry.issue_summary or "—" }}</span></li>
+                <li><span class="label">Service type</span><span class="value">{{ enquiry.service_type or "—" }}</span></li>
+                <li><span class="label">Urgency</span><span class="value">{{ enquiry.urgency or "—" }}</span></li>
+                <li><span class="label">Preferred time</span><span class="value">{{ enquiry.preferred_time or "—" }}</span></li>
+                <li><span class="label">Final action</span><span class="value">{{ enquiry.final_action or "—" }}</span></li>
+            </ul>
+        </div>
+
+        {% if job %}
+        <div class="card">
+            <h2>Job request</h2>
+            <div class="action-box">
+                <div class="action-name">Job #{{ job.id }}</div>
+                <p style="margin-top:8px;">Created {{ job.created_at }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <h2>Conversation history</h2>
+            {% for m in messages %}
+            <p style="margin-bottom:8px;">
+                <strong>{% if m.sender == 'customer' %}Customer{% else %}System{% endif %}:</strong>
+                {{ m.text }}
+            </p>
+            {% endfor %}
+            {% if not messages %}
+            <p class="label">No messages recorded.</p>
+            {% endif %}
+        </div>
+
+        <a class="back-link" href="/admin/enquiries">← Back to all enquiries</a>
+
+    </div>
+</body>
+</html>
