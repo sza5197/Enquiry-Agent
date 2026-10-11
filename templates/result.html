@@ -1,107 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Enquiry Result</title>
+    <title>Enquiry received</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
 
+        {% if result.action == "CREATE_JOB_REQUEST" %}
         <div class="card">
-            <h1>Enquiry #{{ enquiry_id }}</h1>
-            <h2>Original message</h2>
-            <p>{{ message }}</p>
+            <h1>Thanks — we've got your enquiry</h1>
+            <p>We've received your request and our team will be in touch shortly to arrange your service.</p>
         </div>
 
+        {% elif result.action == "ASK_FOR_MISSING_INFORMATION" %}
         <div class="card">
-            <h2>Extracted details</h2>
-            <ul class="field-list">
-                <li><span class="label">Customer name</span>
-                    <span class="value {% if not extracted.customer_name %}empty{% endif %}">{{ extracted.customer_name or "not provided" }}</span></li>
-                <li><span class="label">Contact</span>
-                    <span class="value {% if not extracted.contact_information %}empty{% endif %}">{{ extracted.contact_information or "not provided" }}</span></li>
-                <li><span class="label">Suburb</span>
-                    <span class="value {% if not extracted.suburb %}empty{% endif %}">{{ extracted.suburb or "not provided" }}</span></li>
-                <li><span class="label">Issue</span>
-                    <span class="value {% if not extracted.issue_summary %}empty{% endif %}">{{ extracted.issue_summary or "not provided" }}</span></li>
-                <li><span class="label">Service type</span>
-                    <span class="value {% if not extracted.service_type %}empty{% endif %}">{{ extracted.service_type or "not provided" }}</span></li>
-                <li><span class="label">Urgency</span>
-                    <span class="value">{{ extracted.urgency }}</span></li>
-                <li><span class="label">Preferred time</span>
-                    <span class="value {% if not extracted.preferred_time %}empty{% endif %}">{{ extracted.preferred_time or "not provided" }}</span></li>
+            <h1>Just one more thing</h1>
+            <p>To help us get someone out to you, could you answer the following:</p>
+            <ul style="margin:12px 0 0 18px;">
+                {% for q in result.questions %}
+                <li style="margin-bottom:6px;">{{ q }}</li>
+                {% endfor %}
             </ul>
+            <form action="/followup" method="POST" style="margin-top:16px;">
+                <input type="hidden" name="enquiry_id" value="{{ enquiry_id }}">
+                <textarea name="answer" rows="3" placeholder="Type your answer here..."></textarea>
+                <br>
+                <button type="submit">Send answer</button>
+            </form>
         </div>
 
+        {% else %}
         <div class="card">
-            <h2>Status</h2>
-            <span class="badge {% if not missing %}complete{% else %}incomplete{% endif %}">{% if not missing %}COMPLETE{% else %}INCOMPLETE{% endif %}</span>
-
-            {% if missing %}
-            <div class="warning-box" style="margin-top:16px;">
-                <strong>Missing information:</strong>
-                <ul>
-                    {% for field in missing %}
-                    <li>{{ field }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
+            <h1>Thanks — we've received your enquiry</h1>
+            <p>One of our team members will review your message and get back to you shortly.</p>
         </div>
-
-        <div class="card">
-            <h2>Decision</h2>
-
-            <p style="margin-bottom:10px;">
-                <span class="label">AI proposed:</span>
-                <strong>{{ ai_proposed }}</strong><br>
-                <span class="label" style="font-size:0.9rem;">{{ ai_reason }}</span>
-            </p>
-
-            <p style="margin-bottom:14px;">
-                <span class="label">Final decision (Python):</span>
-                <strong>{{ final_action }}</strong><br>
-                <span class="label" style="font-size:0.9rem;">{{ final_reason }}</span>
-            </p>
-
-            {% if ai_proposed != final_action %}
-            <div class="warning-box" style="margin-bottom:14px;">
-                <strong>Python overrode the AI's proposal</strong> based on the business rules.
-            </div>
-            {% endif %}
-
-            <div class="action-box">
-                <div class="action-name">{{ result.action }}</div>
-
-                {% if result.job_id %}
-                <p style="margin-top:8px;">Job request created with ID: <strong>{{ result.job_id }}</strong></p>
-                {% endif %}
-
-                {% if result.questions %}
-                <p style="margin-top:8px;">Follow-up questions:</p>
-                <ul style="margin-left:18px;">
-                    {% for q in result.questions %}
-                    <li>{{ q }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-
-
-                {% if result.questions %}
-                <form action="/followup" method="POST" style="margin-top:14px;">
-                    <input type="hidden" name="enquiry_id" value="{{ enquiry_id }}">
-                    <textarea name="answer" rows="3"
-                              placeholder="Type your answer here..."></textarea>
-                    <br>
-                    <button type="submit">Send answer</button>
-                </form>
-                {% endif %}
-
-                {% if result.reason %}
-                <p style="margin-top:8px;">Reason: {{ result.reason }}</p>
-                {% endif %}
-            </div>
-        </div>
+        {% endif %}
 
         <a class="back-link" href="/">← Submit another enquiry</a>
 

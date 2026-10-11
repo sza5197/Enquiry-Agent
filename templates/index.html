@@ -8,6 +8,19 @@
     <div class="container">
         <div class="card">
             <h1>Submit an enquiry</h1>
+
+            <p>To help us respond quickly, please include:</p>
+            <ul style="margin:8px 0 14px 18px;">
+                <li>What the problem is</li>
+                <li>Your suburb</li>
+                <li>A phone number or email we can reach you on</li>
+            </ul>
+
+            <p class="label" style="margin-bottom:16px;">
+                Example: "My air conditioner stopped cooling. I'm in Werribee,
+                my name is Sarah, call me on 0412 345 678."
+            </p>
+
             <form action="/submit" method="POST">
                 <textarea name="message" rows="6"
                           placeholder="Describe what you need help with..."></textarea>

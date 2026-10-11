@@ -36,7 +36,12 @@ def submit():
     else:
         result = actions.mark_for_human_review(enquiry_id, extracted, final_reason)
 
-    status = "COMPLETE" if not missing else "INCOMPLETE"
+    if final_action == "CREATE_JOB_REQUEST":
+        status = "COMPLETE"
+    elif final_action == "ASK_FOR_MISSING_INFORMATION":
+        status = "INCOMPLETE"
+    else:
+        status = "NEEDS_REVIEW"
     database.update_enquiry_processed(enquiry_id, extracted, status, final_action)
 
     return render_template(
@@ -94,7 +99,12 @@ def followup():
     else:
         result = actions.mark_for_human_review(enquiry_id, extracted, final_reason)
 
-    status = "COMPLETE" if not missing else "INCOMPLETE"
+    if final_action == "CREATE_JOB_REQUEST":
+        status = "COMPLETE"
+    elif final_action == "ASK_FOR_MISSING_INFORMATION":
+        status = "INCOMPLETE"
+    else:
+        status = "NEEDS_REVIEW"
     database.update_enquiry_processed(enquiry_id, extracted, status, final_action)
 
     # 7. get the original message to show at the top
