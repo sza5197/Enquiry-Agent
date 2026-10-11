@@ -47,14 +47,33 @@ Propose ONE action from these three:
 Customer message:
 "{message}"
 """
-    response = client.models.generate_content(
-        model=MODEL_NAME,
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            response_mime_type="application/json",
-            response_schema=ENQUIRY_SCHEMA,
-        ),
-    )
+    try:
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=ENQUIRY_SCHEMA,
+            ),
+        )
+        data = json.loads(response.text)
+        return data
+
+    except Exception as e:
+        # If the AI call fails (API down, quota exceeded, bad response, etc.),
+        # fall back safely: don't crash, don't guess — route to a human.
+        print(f"[ai_service] extract_enquiry failed: {e}")
+        return {
+            "customer_name": None,
+            "contact_information": None,
+            "suburb": None,
+            "issue_summary": None,
+            "service_type": None,
+            "urgency": "normal",
+            "preferred_time": None,
+            "proposed_action": "HUMAN_REVIEW",
+            "reason": "The automated system could not process this enquiry, so it has been sent for human review.",
+        }
 
     raw_text = response.text
     data = json.loads(raw_text)
@@ -90,14 +109,33 @@ Give a short reason for your proposed action.
 Conversation so far:
 {conversation}
 """
-    response = client.models.generate_content(
-        model=MODEL_NAME,
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            response_mime_type="application/json",
-            response_schema=ENQUIRY_SCHEMA,
-        ),
-    )
+    try:
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=ENQUIRY_SCHEMA,
+            ),
+        )
+        data = json.loads(response.text)
+        return data
+
+    except Exception as e:
+        # If the AI call fails (API down, quota exceeded, bad response, etc.),
+        # fall back safely: don't crash, don't guess — route to a human.
+        print(f"[ai_service] extract_enquiry failed: {e}")
+        return {
+            "customer_name": None,
+            "contact_information": None,
+            "suburb": None,
+            "issue_summary": None,
+            "service_type": None,
+            "urgency": "normal",
+            "preferred_time": None,
+            "proposed_action": "HUMAN_REVIEW",
+            "reason": "The automated system could not process this enquiry, so it has been sent for human review.",
+        }
 
     raw_text = response.text
     data = json.loads(raw_text)
