@@ -1,10 +1,30 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, Response
 import database
 import ai_service
 import business_rules
 import actions
+import os
+from dotenv import load_dotenv
+from functools import wraps
+load_dotenv()
 
 app = Flask(__name__)
+
+def check_auth(username, password):
+    return (username == os.getenv("ADMIN_USERNAME")
+            and password == os.getenv("ADMIN_PASSWORD"))
+
+def require_admin(f):
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return Response(
+                "Admin access required.", 401,
+                {"WWW-Authenticate": 'Basic realm="Admin"'}
+            )
+        return f(*args, **kwargs)
+    return wrapped
 
 database.init_db()
 
@@ -125,6 +145,7 @@ def followup():
 
 
 @app.route("/admin/enquiries")
+@require_admin
 def admin_enquiries():
     # NOTE (prototype): this page shows ALL customers' data and has NO access control.
     # It is safe only because we run locally. Before any deployment, this MUST be
@@ -133,6 +154,7 @@ def admin_enquiries():
     return render_template("enquiries.html", enquiries=enquiries)
 
 @app.route("/admin/enquiries/<int:enquiry_id>")
+@require_admin
 def admin_enquiry_detail(enquiry_id):
     # NOTE (prototype): internal-only, no access control. Needs auth before deployment.
     enquiry = database.get_enquiry(enquiry_id)
@@ -151,4 +173,5 @@ def admin_enquiry_detail(enquiry_id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    debug_mode = os.getenv("FLASK_DEBUG", "false").lower() == "true"
+    app.run(debug=debug_mode)
