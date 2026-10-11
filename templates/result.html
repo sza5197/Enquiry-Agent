@@ -86,6 +86,17 @@
                 </ul>
                 {% endif %}
 
+
+                {% if result.questions %}
+                <form action="/followup" method="POST" style="margin-top:14px;">
+                    <input type="hidden" name="enquiry_id" value="{{ enquiry_id }}">
+                    <textarea name="answer" rows="3"
+                              placeholder="Type your answer here..."></textarea>
+                    <br>
+                    <button type="submit">Send answer</button>
+                </form>
+                {% endif %}
+
                 {% if result.reason %}
                 <p style="margin-top:8px;">Reason: {{ result.reason }}</p>
                 {% endif %}

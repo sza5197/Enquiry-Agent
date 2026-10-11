@@ -69,3 +69,40 @@ def ask_ai(message):
     return response.text
 
 
+def extract_with_followup(conversation):
+    prompt = f"""
+You are an enquiry processor for a home-services business (HVAC, plumbing, electrical).
+Below is the conversation so far between the customer and the system.
+Read ALL of it together and extract the current best understanding of the enquiry, then propose the next action.
+
+Extraction rules:
+- Combine information from the whole conversation.
+- If a field is still not present anywhere in the conversation, use null.
+- Do not invent information that isn't there.
+
+Propose ONE action:
+- CREATE_JOB_REQUEST: genuine, in-scope request with enough detail to act on.
+- ASK_FOR_MISSING_INFORMATION: real request but important details still missing.
+- HUMAN_REVIEW: out of scope, contradictory, or unclear.
+
+Give a short reason for your proposed action.
+
+Conversation so far:
+{conversation}
+"""
+    response = client.models.generate_content(
+        model=MODEL_NAME,
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            response_mime_type="application/json",
+            response_schema=ENQUIRY_SCHEMA,
+        ),
+    )
+
+    raw_text = response.text
+    data = json.loads(raw_text)
+    return data
+
+
+
+
