@@ -16,6 +16,7 @@ def home():
 def submit():
     message = request.form["message"]
     enquiry_id = database.save_enquiry(message)
+    database.add_message(enquiry_id, "customer", message)   # ← log it as the first message
 
     extracted = ai_service.extract_enquiry(message)
 
