@@ -12,7 +12,17 @@ def init_db():
         CREATE TABLE IF NOT EXISTS enquiries (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             raw_message TEXT NOT NULL,
-            created_at TEXT NOT NULL
+            customer_name TEXT,
+            contact_information TEXT,
+            suburb TEXT,
+            issue_summary TEXT,
+            service_type TEXT,
+            urgency TEXT,
+            preferred_time TEXT,
+            status TEXT,
+            final_action TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT
         )
     """)
 
@@ -133,6 +143,58 @@ def get_messages(enquiry_id):
         "SELECT * FROM messages WHERE enquiry_id = ? ORDER BY id",
         (enquiry_id,)
     )
+    rows = cursor.fetchall()
+
+    connection.close()
+
+    return [dict(row) for row in rows]
+
+
+def update_enquiry_processed(enquiry_id, extracted, status, final_action):
+    connection = sqlite3.connect(DB_NAME)
+    cursor = connection.cursor()
+
+    updated_at = datetime.now().isoformat()
+
+    cursor.execute(
+        """
+        UPDATE enquiries
+        SET customer_name = ?,
+            contact_information = ?,
+            suburb = ?,
+            issue_summary = ?,
+            service_type = ?,
+            urgency = ?,
+            preferred_time = ?,
+            status = ?,
+            final_action = ?,
+            updated_at = ?
+        WHERE id = ?
+        """,
+        (
+            extracted.get("customer_name"),
+            extracted.get("contact_information"),
+            extracted.get("suburb"),
+            extracted.get("issue_summary"),
+            extracted.get("service_type"),
+            extracted.get("urgency"),
+            extracted.get("preferred_time"),
+            status,
+            final_action,
+            updated_at,
+            enquiry_id,
+        )
+    )
+
+    connection.commit()
+    connection.close()
+
+def get_all_enquiries():
+    connection = sqlite3.connect(DB_NAME)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM enquiries ORDER BY id DESC")
     rows = cursor.fetchall()
 
     connection.close()

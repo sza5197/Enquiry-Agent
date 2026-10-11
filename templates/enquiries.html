@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin — Enquiries</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container" style="max-width:900px;">
+        <div class="card">
+            <h1>All enquiries</h1>
+            <p class="label">Internal operator view</p>
+        </div>
+
+        {% for e in enquiries %}
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <strong>Enquiry #{{ e.id }}</strong>
+                    <span class="badge {% if e.status == 'COMPLETE' %}complete{% else %}incomplete{% endif %}"
+                          style="margin-left:10px;">{{ e.status or "—" }}</span>
+                </div>
+                <a class="back-link" href="/admin/enquiries/{{ e.id }}" style="margin-top:0;">View →</a>
+            </div>
+            <ul class="field-list" style="margin-top:12px;">
+                <li><span class="label">Suburb</span><span class="value">{{ e.suburb or "—" }}</span></li>
+                <li><span class="label">Issue</span><span class="value">{{ e.issue_summary or "—" }}</span></li>
+                <li><span class="label">Urgency</span><span class="value">{{ e.urgency or "—" }}</span></li>
+                <li><span class="label">Action</span><span class="value">{{ e.final_action or "—" }}</span></li>
+            </ul>
+        </div>
+        {% endfor %}
+
+        {% if not enquiries %}
+        <div class="card"><p>No enquiries yet.</p></div>
+        {% endif %}
+    </div>
+</body>
+</html>

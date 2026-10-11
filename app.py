@@ -36,6 +36,9 @@ def submit():
     else:
         result = actions.mark_for_human_review(enquiry_id, extracted, final_reason)
 
+    status = "COMPLETE" if not missing else "INCOMPLETE"
+    database.update_enquiry_processed(enquiry_id, extracted, status, final_action)
+
     return render_template(
         "result.html",
         enquiry_id=enquiry_id,
@@ -91,6 +94,9 @@ def followup():
     else:
         result = actions.mark_for_human_review(enquiry_id, extracted, final_reason)
 
+    status = "COMPLETE" if not missing else "INCOMPLETE"
+    database.update_enquiry_processed(enquiry_id, extracted, status, final_action)
+
     # 7. get the original message to show at the top
     enquiry = database.get_enquiry(enquiry_id)
 
@@ -106,6 +112,15 @@ def followup():
         final_reason=final_reason,
         result=result
     )
+
+
+@app.route("/admin/enquiries")
+def admin_enquiries():
+    # NOTE (prototype): this page shows ALL customers' data and has NO access control.
+    # It is safe only because we run locally. Before any deployment, this MUST be
+    # protected with authentication, or it exposes everyone's enquiries publicly.
+    enquiries = database.get_all_enquiries()
+    return render_template("enquiries.html", enquiries=enquiries)
 
 
 if __name__ == "__main__":
