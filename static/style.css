@@ -109,3 +109,5 @@ a.back-link {
     font-weight: 600;
 }
 a.back-link:hover { text-decoration: underline; }
+
+.badge.needs_review { background: #e9d8fd; color: #553c9a; }
