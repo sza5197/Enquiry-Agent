@@ -30,6 +30,16 @@ def init_db():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            enquiry_id INTEGER NOT NULL,
+            sender TEXT NOT NULL,
+            text TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )
+    """)
+
     connection.commit()
     connection.close()
 
@@ -83,3 +93,48 @@ def save_job_request(enquiry_id, data):
     connection.close()
 
     return new_job_id
+
+def add_message(enquiry_id, sender, text):
+    connection = sqlite3.connect(DB_NAME)
+    cursor = connection.cursor()
+
+    created_at = datetime.now().isoformat()
+
+    cursor.execute(
+        "INSERT INTO messages (enquiry_id, sender, text, created_at) VALUES (?, ?, ?, ?)",
+        (enquiry_id, sender, text, created_at)
+    )
+
+    connection.commit()
+    connection.close()
+
+
+def get_enquiry(enquiry_id):
+    connection = sqlite3.connect(DB_NAME)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM enquiries WHERE id = ?", (enquiry_id,))
+    row = cursor.fetchone()
+
+    connection.close()
+
+    if row is None:
+        return None
+    return dict(row)
+
+
+def get_messages(enquiry_id):
+    connection = sqlite3.connect(DB_NAME)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute(
+        "SELECT * FROM messages WHERE enquiry_id = ? ORDER BY id",
+        (enquiry_id,)
+    )
+    rows = cursor.fetchall()
+
+    connection.close()
+
+    return [dict(row) for row in rows]
